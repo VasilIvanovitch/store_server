@@ -1,0 +1,42 @@
+[
+{
+    "model": "products.productcategory",
+    "pk": 1,
+    "fields": {
+        "name": "Новинки",
+        "description": null
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 2,
+    "fields": {
+        "name": "Аксессуары",
+        "description": "Стильно, модно, молодежно"
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 3,
+    "fields": {
+        "name": "Подарки",
+        "description": "Недорогие запоминающиеся подарки"
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 4,
+    "fields": {
+        "name": "Обувь",
+        "description": "Модная обувь на каждый день"
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 5,
+    "fields": {
+        "name": "Одежда",
+        "description": "Модная одежда"
+    }
+}
+]

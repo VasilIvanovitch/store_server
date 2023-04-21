@@ -4,6 +4,7 @@ from users.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.views.generic.base import TemplateView, View
+from django.views.generic.list import ListView
 
 dic_product = [
     {
@@ -54,18 +55,35 @@ class IndexView(TemplateView):
 # def index(request):
 #     return render(request, 'products/index.html')
 
-def products(request, category_id=None, page_number=1):
-    products = Product.objects.filter(category__id=category_id) if category_id else Product.objects.all()
-    per_page = 3
-    paginator = Paginator(products, per_page)
-    products_paginator = paginator.page(page_number)
-    context = {
-        'title': 'Store - Каталог',
-        #'products': dic_product,
-        'products': products_paginator,
-        'categorys': ProductCategory.objects.all(),
-    }
-    return render(request, 'products/products.html', context=context)
+class ProductsListView(ListView):
+    model = Product
+    template_name = 'products/products.html'
+    context_object_name = 'products'
+    paginate_by = 3
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductsListView, self).get_context_data()
+        context['categorys'] = ProductCategory.objects.all()
+        context['title'] = "Store-Каталог"
+        return context
+
+    def get_queryset(self):
+        queryset = super(ProductsListView, self).get_queryset()
+        category_id = self.kwargs.get('category_id')
+        return queryset.filter(category_id=category_id) if category_id else queryset
+
+
+# def products(request, category_id=None, page_number=1):
+#     products = Product.objects.filter(category__id=category_id) if category_id else Product.objects.all()
+#     per_page = 3
+#     paginator = Paginator(products, per_page)
+#     products_paginator = paginator.page(page_number)
+#     context = {
+#         'title': 'Store - Каталог',
+#         #'products': dic_product,
+#         'products': products_paginator,
+#         'categorys': ProductCategory.objects.all(),
+#     }
+#     return render(request, 'products/products.html', context=context)
 
 @login_required
 def basket_add(request, product_id):

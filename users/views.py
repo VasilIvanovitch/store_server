@@ -3,27 +3,30 @@ from django.contrib import auth, messages
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from pyexpat import model
+from common.views import TitleMixin
 
 from users.models import User
 from  products.models import Basket
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from django.contrib.auth.views import LoginView
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.messages.views import SuccessMessageMixin
 
-class UserLoginView(LoginView):
+class UserLoginView(TitleMixin, LoginView):
     template_name = 'users/login.html'
     form_class = UserLoginForm
-
-class UserRegistrationView(CreateView):
+    title = 'Store - Авторизация'
+class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
     model = User
     form_class = UserRegistrationForm
     template_name = 'users/registration.html'
     success_url = reverse_lazy('users:login')
-
-    def get_context_data(self, **kwargs):
-        context = super(UserRegistrationView, self).get_context_data()
-        context['title'] = 'Store - Регистрация'
-        return context
+    success_message = 'Регистрация завершена успешно'
+    title = 'Store - Регистрация'
+    # def get_context_data(self, **kwargs):
+    #     context = super(UserRegistrationView, self).get_context_data()
+    #     context['title'] = 'Store - Регистрация'
+    #     return context
 class UserProfileView(UpdateView):
     model = User
     form_class = UserProfileForm

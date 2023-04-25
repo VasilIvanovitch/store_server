@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView # не используется
-
+from common.views import TitleMixin
 
 dic_product = [
     {
@@ -47,25 +47,26 @@ dic_product = [
     },
 ]
 
-class IndexView(TemplateView):
+class IndexView(TitleMixin, TemplateView):
     template_name = 'products/index.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "Store"
-        return context
+    title = "Store"
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['title'] = "Store"
+    #     return context
 # def index(request):
 #     return render(request, 'products/index.html')
 
-class ProductsListView(ListView):
+class ProductsListView(TitleMixin, ListView):
     model = Product
     template_name = 'products/products.html'
     context_object_name = 'products'
     paginate_by = 3
+    title = "Store-Каталог"
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProductsListView, self).get_context_data()
         context['categorys'] = ProductCategory.objects.all()
-        context['title'] = "Store-Каталог"
+        #context['title'] = "Store-Каталог"
         return context
 
     def get_queryset(self):

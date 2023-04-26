@@ -14,4 +14,5 @@ urlpatterns = [
     # path('profile', views.profile, name='profile'),
     path('logout', LogoutView.as_view(), name='logout'),
     # path('logout', views.logout, name='logout'),
+    path('verify/<str:email>/<uuid:code>', views.EmailVerificationView.as_view(), name='email_verification'),
 ]

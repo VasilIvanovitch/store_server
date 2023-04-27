@@ -1,24 +1,25 @@
-from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth, messages
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
-from pyexpat import model
+# from django.contrib import auth, messages
+# from django.contrib.auth.decorators import login_required
+# from pyexpat import model
 
+from django.contrib.auth.views import LoginView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import HttpResponseRedirect, render
+from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from common.views import TitleMixin
+from users.forms import UserLoginForm, UserProfileForm, UserRegistrationForm
+from users.models import EmailVerification, User
 
-from users.models import User, EmailVerification
-from  products.models import Basket
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-from django.contrib.auth.views import LoginView
-from django.views.generic.edit import CreateView, UpdateView
-from django.contrib.messages.views import SuccessMessageMixin
 
 class UserLoginView(TitleMixin, LoginView):
     template_name = 'users/login.html'
     form_class = UserLoginForm
     title = 'Store - Авторизация'
+
+
 class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
     model = User
     form_class = UserRegistrationForm
@@ -30,11 +31,14 @@ class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
     #     context = super(UserRegistrationView, self).get_context_data()
     #     context['title'] = 'Store - Регистрация'
     #     return context
+
+
 class UserProfileView(UpdateView):
     model = User
     form_class = UserProfileForm
     template_name = 'users/profile.html'
     title = 'Store - Личный кабинет'
+
     # def get_context_data(self, **kwargs):
     #     context = super(UserProfileView, self).get_context_data()
     #     context['baskets'] = Basket.objects.filter(user=self.object)
@@ -42,6 +46,7 @@ class UserProfileView(UpdateView):
     #     return context
     def get_success_url(self):
         return reverse_lazy('users:profile', args=[self.object.id])
+
 
 class EmailVerificationView(TitleMixin, TemplateView):
     title = 'Store - Подтверждение электронной почты'
@@ -60,8 +65,6 @@ class EmailVerificationView(TitleMixin, TemplateView):
             return super(EmailVerificationView, self).get(request, *args, **kwargs)
         else:
             HttpResponseRedirect(reverse('index'))
-
-
 
 # http://localhost:8000/users/verify/ver@ver.com/f13db816-0123-4546-a6d9-7ad31bde5d95
 # def login(request):

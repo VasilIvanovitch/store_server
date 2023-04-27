@@ -1,7 +1,9 @@
-from django.urls import path, include
-from django.contrib.auth.views import LogoutView
-from users import views
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
+from django.urls import include, path
+
+from users import views
+
 app_name = 'users'
 
 urlpatterns = [

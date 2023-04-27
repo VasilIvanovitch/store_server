@@ -1,12 +1,15 @@
-from django.shortcuts import render, HttpResponseRedirect
-from products.models import Product, ProductCategory, Basket
-from users.models import User
+# from users.models import User
+# from django.core.paginator import Paginator
+# from django.views.generic.edit import CreateView  # не используется
+
+
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.shortcuts import HttpResponseRedirect
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView # не используется
+
 from common.views import TitleMixin
+from products.models import Basket, Product, ProductCategory
 
 dic_product = [
     {
@@ -47,6 +50,7 @@ dic_product = [
     },
 ]
 
+
 class IndexView(TitleMixin, TemplateView):
     template_name = 'products/index.html'
     title = "Store"
@@ -54,6 +58,8 @@ class IndexView(TitleMixin, TemplateView):
     #     context = super().get_context_data(**kwargs)
     #     context['title'] = "Store"
     #     return context
+
+
 # def index(request):
 #     return render(request, 'products/index.html')
 
@@ -63,10 +69,11 @@ class ProductsListView(TitleMixin, ListView):
     context_object_name = 'products'
     paginate_by = 3
     title = "Store-Каталог"
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProductsListView, self).get_context_data()
         context['categorys'] = ProductCategory.objects.all()
-        #context['title'] = "Store-Каталог"
+        # context['title'] = "Store-Каталог"
         return context
 
     def get_queryset(self):
@@ -99,6 +106,7 @@ def basket_add(request, product_id):
         basket.quantity += 1
         basket.save()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
 
 @login_required
 def basket_remove(request, basket_id):

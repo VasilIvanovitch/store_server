@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 
 from locals_vars import (EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER,
-                         EMAIL_PORT, SECRET_KEY)
+                         EMAIL_PORT, SECRET_KEY, PG_NAME, PG_USER, PG_PASSWORD, PG_HOST)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,10 +82,21 @@ WSGI_APPLICATION = 'store.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': PG_NAME,
+        'USER': PG_USER,
+        'PASSWORD': PG_PASSWORD,
+        'HOST': PG_HOST,
+        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation

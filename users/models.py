@@ -1,12 +1,18 @@
-from uuid import UUID
-
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import send_mail
+from django.db import models
+from django.urls import reverse
+from django.utils.timezone import now
+
+
 # Create your models here.
 class User(AbstractUser):
     image = models.ImageField(upload_to='users_images', null=True, blank=True)
     is_verified_email = models.BooleanField(default=False)
+    email = models.EmailField(unique=True)
+
+
 class EmailVerification(models.Model):
     code = models.UUIDField(unique=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
@@ -17,12 +23,22 @@ class EmailVerification(models.Model):
         return f'EmailVerification object for {self.user.email}'
 
     def send_verivication_mail(self):
+        link = reverse('users:email_verification', kwargs={'email': self.user.email, 'code': self.code})
+        verification_link = f'{settings.DOMAIN_NAME}{link}'
+        subject = f'Подтверждение учетной записи для {self.user.username}'
+        mesage = 'Для подтверждения учетной записи {} перейдите по ссылке: {}'.format(
+            self.user.email,
+            verification_link
+        )
         send_mail(
-            "Subject here",
-            "emai verification",
-            "from@example.com",
-            ["self.user.email"],
+            subject=subject,
+            message=mesage,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[self.user.email],
             fail_silently=False,
         )
+
+    def is_expired(self):
+        return True if now() >= self.expiration else False
 
 #  python manage.py shell_plus --print-sql

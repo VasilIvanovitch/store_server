@@ -1,6 +1,8 @@
+# from users.models import User
+
 from django.contrib import admin
-from products.models import ProductCategory, Product, Basket
-from users.models import User
+
+from products.models import Basket, Product, ProductCategory
 
 # class WomenAdmin(admin.ModelAdmin):
 #     list_display = ('id', 'title', 'time_create', 'photo', 'is_published')
@@ -17,9 +19,11 @@ from users.models import User
 #     prepopulated_fields = {"slug": ("name",)}
 
 
-#admin.site.register(ProductCategory, ProductCategoryAdmin)
+# admin.site.register(ProductCategory, ProductCategoryAdmin)
+# admin.site.register(Product)
+
 admin.site.register(ProductCategory)
-#admin.site.register(Product)
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -28,6 +32,7 @@ class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ('description',)
     search_fields = ('name', 'price',)
     ordering = ('name',)
+
 
 class BasketAdmin(admin.TabularInline):
     model = Basket

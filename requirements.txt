@@ -6,3 +6,4 @@ ipython==8.12.0
 isort==5.12.0
 flake8==6.0.0
 psycopg2==2.9.6
+django-allauth==0.54.0

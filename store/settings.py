@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 
 from locals_vars import (EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER,
-                         EMAIL_PORT, SECRET_KEY, PG_NAME, PG_USER, PG_PASSWORD, PG_HOST)
+                         EMAIL_PORT, PG_HOST, PG_NAME, PG_PASSWORD, PG_USER,
+                         SECRET_KEY)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

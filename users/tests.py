@@ -1,12 +1,16 @@
 from datetime import timedelta
 from http import HTTPStatus
 
-from django.test import TestCase
-from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.test import TestCase, Client
+from django.urls import reverse, reverse_lazy
 from django.utils.timezone import now
 
+from .forms import UserProfileForm
+from .views import UserProfileView
 from users.forms import UserLoginForm
 from users.models import EmailVerification, User
+
 
 
 class UserRegistrationViewTestCase(TestCase):
@@ -83,4 +87,54 @@ class UserLoginViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'users/login.html')
         self.assertIn('form', response.context)
         self.assertTrue(response.context['form'].errors)
-    
+
+
+class UserProfileViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            email='testuser@test.com',
+            password='testpass',
+        )
+
+    def test_profile_page_accessible(self):
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.get(reverse('users:profile', args=[self.user.id]))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        def test_profile_update(self):
+            self.client.login(username='testuser', password='testpass')
+            form_data = {'first_name': 'Test', 'last_name': 'User', 'email': 'newtestuser@test.com'}
+            response = self.client.post(reverse_lazy('users:profile_update', kwargs={'pk': self.user.id}),
+                                        data=form_data)
+            self.assertEqual(response.status_code, 302)
+            response = self.client.get(reverse_lazy('users:profile', kwargs={'pk': self.user.id}))
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, 'Test User')
+            self.user.refresh_from_db()
+            self.assertEqual(self.user.first_name, 'Test')
+            self.assertEqual(self.user.last_name, 'User')
+            self.assertEqual(self.user.email, 'newtestuser@test.com')
+
+
+# class UserProfileViewTestCase(TestCase):
+#     def setUp(self):
+#         self.user = User.objects.create_user(username='testuser', email='testuser@example.com', password='testpass')
+#         self.url = reverse('users:profile', args=[self.user.id])
+#
+#     def test_profile_access_for_unauthenticated_user(self):
+#         response = self.client.get(self.url)
+#         self.assertEqual(response.status_code, 302)
+#         self.assertRedirects(response, reverse('index'))
+
+    # def test_profile_update(self):
+    #     self.client.login(username='testuser', password='testpass')
+    #     data = {'first_name': 'John', 'last_name': 'Doe', 'email': 'testuser@example.com'}
+    #     response = self.client.post(self.url, data=data, follow=True)
+    #     self.assertEqual(response.status_code, 200)
+    #     #  self.assertContains(response, 'Профиль пользователя успешно обновлен')
+    #     self.user.refresh_from_db()
+    #     self.assertEqual(self.user.first_name, 'John')
+    #     self.assertEqual(self.user.last_name, 'Doe')
+    #     self.assertEqual(self.user.email, 'testuser@example.com')

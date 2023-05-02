@@ -33,7 +33,7 @@ class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
     #     return context
 
 
-class UserProfileView(UpdateView):
+class UserProfileView(TitleMixin, UpdateView):
     model = User
     form_class = UserProfileForm
     template_name = 'users/profile.html'

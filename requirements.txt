@@ -8,6 +8,7 @@ flake8==6.0.0
 psycopg2==2.9.6
 django-allauth==0.54.0
 celery==5.2.7
+stripe==5.4.0
 
 
 # celery[redis]==0.2.5

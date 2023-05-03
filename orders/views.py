@@ -123,5 +123,4 @@ def fulfill_order(session):
 #     print("Fulfilling order", order_id)
 
 # stripe listen --forward-to 127.0.0.1:8000/webhook/stripe/
-# id acct_1N3bkNBg6cT5HF9M
 # 4242 4242 4242 4242

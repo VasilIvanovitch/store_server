@@ -13,7 +13,7 @@ from pathlib import Path
 
 from locals_vars import (EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER,
                          EMAIL_PORT, PG_HOST, PG_NAME, PG_PASSWORD, PG_USER,
-                         SECRET_KEY)
+                         SECRET_KEY, STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DOMAIN_NAME = 'http://localhost:8000'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
 # Application definition
 
 INSTALLED_APPS = [
@@ -205,3 +205,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+
+# Stripe
+
+STRIPE_PUBLIC_KEY = STRIPE_PUBLIC_KEY
+STRIPE_SECRET_KEY = STRIPE_SECRET_KEY

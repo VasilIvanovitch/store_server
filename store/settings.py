@@ -13,7 +13,8 @@ from pathlib import Path
 
 from locals_vars import (EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER,
                          EMAIL_PORT, PG_HOST, PG_NAME, PG_PASSWORD, PG_USER,
-                         SECRET_KEY, STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY)
+                         SECRET_KEY, STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY,
+                         STRIPE_WEBHOOK_SECRET, )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -210,3 +211,4 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 
 STRIPE_PUBLIC_KEY = STRIPE_PUBLIC_KEY
 STRIPE_SECRET_KEY = STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET = STRIPE_WEBHOOK_SECRET

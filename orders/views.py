@@ -13,6 +13,7 @@ from django.http import HttpResponse
 from orders.forms import OrderForm
 from common.views import TitleMixin
 from products.models import Basket
+from orders.models import Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -26,6 +27,7 @@ class OrderCreateView(TitleMixin, CreateView):
     def post(self, request, *args, **kwargs):
         super(OrderCreateView, self).post(request, *args, **kwargs)
         baskets = Basket.objects.filter(user=self.request.user)
+        print(f'self.object.id -- {self.object.id}')
         checkout_session = stripe.checkout.Session.create(
             line_items=baskets.stripe_products(),
             metadata={'order_id': self.object.id},
@@ -79,7 +81,10 @@ def stripe_webhook_view(request):
 
 def fulfill_order(session):
     order_id = int(session.metadata.order_id)
-    print("Fulfilling order")
+    print(f'order_id - {order_id}')
+    order = Order.objects.get(id=order_id)
+    order.update_after_payment()
+    # print("Fulfilling order")
 
 # @csrf_exempt
 # def stripe_webhook_view(request):
@@ -114,9 +119,9 @@ def fulfill_order(session):
 #     return HttpResponse(status=200)
 #
 #
-# def fulfill_order(session):
-#     order_id = int(session.metadata.order_id)
-#     print("Fulfilling order", order_id)
+# def fulfill_order(line_items):
+#     #order_id = int(session.metadata.order_id)
+#     print("Fulfilling order", line_items.id)
 
 # stripe listen --forward-to 127.0.0.1:8000/webhook/stripe/
 # 4242 4242 4242 4242

@@ -84,6 +84,16 @@ class Basket(models.Model):
     def sum(self):
         return self.product.price * self.quantity
 
+    def de_json(self):
+        basket_item = {
+            'product_name': self.product.name,
+            'quontity': self.quantity,
+            'price': float(self.product.price),
+            'sum': float(self.sum())
+        }
+        return basket_item
+
+
 # python manage.py makemigrations
 # python manage.py migrate
 # python manage.py shell_plus --print-sql

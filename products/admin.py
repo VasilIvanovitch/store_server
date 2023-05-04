@@ -28,7 +28,7 @@ admin.site.register(ProductCategory)
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'price', 'quontity', 'category',)
-    fields = ('image', 'name', 'description', ('price', 'quontity'), 'category')
+    fields = ('image', 'name', 'description', ('price', 'quontity'), 'stripe_product_price_id', 'category')
     readonly_fields = ('description',)
     search_fields = ('name', 'price',)
     ordering = ('name',)

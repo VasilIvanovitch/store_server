@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -51,6 +52,18 @@ class CanceledTemplateView(TemplateView):
     template_name = 'orders/canceled.html'
 
 
+class OrderListView(TitleMixin, ListView):
+    template_name = 'orders/orders.html'
+    title = 'Store - Заказы'
+    queryset = Order.objects.all()
+    ordering = ('-created',)
+
+    def get_queryset(self):
+        queryset = super(OrderListView, self).get_queryset()
+        return queryset.filter(initiator=self.request.user)
+
+
+
 @csrf_exempt
 def stripe_webhook_view(request):
     payload = request.body
@@ -87,7 +100,6 @@ def stripe_webhook_view(request):
 
 def fulfill_order(metadata):
     order_id = int(metadata.order_id)
-    print(f'order_id - {order_id}')
     order = Order.objects.get(id=order_id)
     order.update_after_payment()
 

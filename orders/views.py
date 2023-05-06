@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +14,8 @@ from django.http import HttpResponse
 
 from orders.forms import OrderForm
 from common.views import TitleMixin
+from products.models import Basket
+from orders.models import Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -24,14 +28,10 @@ class OrderCreateView(TitleMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         super(OrderCreateView, self).post(request, *args, **kwargs)
+        baskets = Basket.objects.filter(user=self.request.user)
+        print(f'self.object.id -- {self.object.id}')
         checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': 'price_1N3gWxBg6cT5HF9M0K9V8JO7',
-                    'quantity': 1,
-                },
-            ],
+            line_items=baskets.stripe_products(),
             metadata={'order_id': self.object.id},
             mode='payment',
             success_url='{}{}'.format(settings.DOMAIN_NAME, reverse('orders:order_success')),
@@ -53,6 +53,27 @@ class CanceledTemplateView(TemplateView):
     template_name = 'orders/canceled.html'
 
 
+class OrderListView(TitleMixin, ListView):
+    template_name = 'orders/orders.html'
+    title = 'Store - Заказы'
+    queryset = Order.objects.all()
+    ordering = ('-created',)
+
+    def get_queryset(self):
+        queryset = super(OrderListView, self).get_queryset()
+        return queryset.filter(initiator=self.request.user)
+
+
+class OrderDetailView(DetailView):
+    template_name = 'orders/order.html'
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderDetailView, self).get_context_data(**kwargs)
+        context['title'] = f'Store - Заказ # {self.object.id}'
+        return context
+
+
 @csrf_exempt
 def stripe_webhook_view(request):
     payload = request.body
@@ -63,27 +84,34 @@ def stripe_webhook_view(request):
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
-    except ValueError:
+    except ValueError as e:
         # Invalid payload
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe.error.SignatureVerificationError as e:
         # Invalid signature
         return HttpResponse(status=400)
 
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
+        # Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
+        session = stripe.checkout.Session.retrieve(
+            event['data']['object']['id'],
+            expand=['line_items'],
+        )
 
+        metadata = session.metadata
+        # line_items = session.line_items
         # Fulfill the purchase...
-        fulfill_order(session)
+        fulfill_order(metadata)
 
     # Passed signature verification
     return HttpResponse(status=200)
 
 
-def fulfill_order(session):
-    order_id = int(session.metadata.order_id)
-    print("Fulfilling order")
+def fulfill_order(metadata):
+    order_id = int(metadata.order_id)
+    order = Order.objects.get(id=order_id)
+    order.update_after_payment()
 
 # @csrf_exempt
 # def stripe_webhook_view(request):
@@ -95,24 +123,19 @@ def fulfill_order(session):
 #         event = stripe.Webhook.construct_event(
 #             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
 #         )
-#     except ValueError as e:
+#     except ValueError:
 #         # Invalid payload
 #         return HttpResponse(status=400)
-#     except stripe.error.SignatureVerificationError as e:
+#     except stripe.error.SignatureVerificationError:
 #         # Invalid signature
 #         return HttpResponse(status=400)
 #
 #     # Handle the checkout.session.completed event
 #     if event['type'] == 'checkout.session.completed':
-#         # Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
-#         session = stripe.checkout.Session.retrieve(
-#             event['data']['object']['id'],
-#             expand=['line_items'],
-#         )
+#         session = event['data']['object']
 #
-#         line_items = session.line_items
 #         # Fulfill the purchase...
-#         fulfill_order(line_items)
+#         fulfill_order(session)
 #
 #     # Passed signature verification
 #     return HttpResponse(status=200)
@@ -120,7 +143,11 @@ def fulfill_order(session):
 #
 # def fulfill_order(session):
 #     order_id = int(session.metadata.order_id)
-#     print("Fulfilling order", order_id)
+#     print(f'order_id - {order_id}')
+#     order = Order.objects.get(id=order_id)
+#     order.update_after_payment()
+#     # print("Fulfilling order")
+
 
 # stripe listen --forward-to 127.0.0.1:8000/webhook/stripe/
 # 4242 4242 4242 4242

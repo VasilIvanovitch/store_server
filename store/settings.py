@@ -197,9 +197,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]  # подключаем статику
+# подключаем статику
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static',
+    ]
+else:
+    STATIC_ROOT = BASE_DIR / 'static'
+
 MEDIA_URL = '/media/'  # ВНЕШНИЙ адрес подключаем для файлов
 MEDIA_ROOT = BASE_DIR / 'media'  # указываем внутренний путь для файлов
 # Default primary key field type

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import environ
+import os
 
 from pathlib import Path
 
@@ -204,6 +205,7 @@ if DEBUG:
     ]
 else:
     STATIC_ROOT = BASE_DIR / 'static'
+   # STATIC_ROOT = os.patch.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'  # ВНЕШНИЙ адрес подключаем для файлов
 MEDIA_ROOT = BASE_DIR / 'media'  # указываем внутренний путь для файлов

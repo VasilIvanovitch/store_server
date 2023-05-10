@@ -1,6 +1,6 @@
 {% extends 'products/base.html' %}
 
-{% load static humanize %}
+{% load static cache humanize %}
 
     <!-- Custom styles for this template -->
     {% block css %}
@@ -58,6 +58,7 @@
 
             <div class="row">
             <!-- начало карточек товара-->
+		{% cache 180 products  %}
                 {% for product in products %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card h-100">
@@ -82,6 +83,7 @@
                     </div>
                 </div>
                 {% endfor %}
+		{% endcache  %}
 
             <!-- окончание карточек товара-->
             </div>

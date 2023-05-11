@@ -54,9 +54,7 @@ class EmailVerificationView(TitleMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         code = kwargs['code']
-        print(code)
         user = User.objects.get(email=kwargs['email'])
-        print(user)
         email_verifications = EmailVerification.objects.filter(user=user, code=code)
 
         if email_verifications.exists() and not email_verifications.first().is_expired():

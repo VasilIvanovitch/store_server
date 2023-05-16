@@ -10,27 +10,59 @@ services:
       - "443:443" # <--- add this line
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     volumes:
-      - ./persistentdata/certbot/conf:/etc/letsencrypt # <--here
-      - ./persistentdata/certbot/www:/var/www/certbot
-      - ./persistentdata/static:/app/store/static  # /var/www/static
-      - ./persistentdata/media:/app/store/media  # /var/www/media
+      - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
+      - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
+      - /home/basil/store-server/store/static:/app/store/static  # /var/www/static
+      - /home/basil/store-server/store/media:/app/store/media  # /var/www/media
+    depends_on:
+      - django-backend
+
   django-backend:
     restart: always
     build:
       context: ./store
+    # command: sh -c "gunicorn --bind 0.0.0.0:8000 store.store.wsgi"
+    hostname: django-backend
     image: djangobackend
     volumes:
-      - ./persistentdata/static:/app/store/static # <--here /var/www/static
-      - ./persistentdata/media:/app/store/media # <--here /var/www/media
-    #depends_on:
-    #  - nginx
+      - /home/basil/store-server/store/static:/app/store/static # <--here /var/www/static
+      - /home/basil/store-server/store/media:/app/store/media # <--here /var/www/media
+      - /home/basil/store-server/store:/app/store
+    expose:
+      - 8000
 
   certbot:
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
-      - ./persistentdata/certbot/conf:/etc/letsencrypt # <--here
-      - ./persistentdata/certbot/www:/var/www/certbot
+      - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
+      - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
+
+  redis:
+    image: redis:7.0.11-alpine
+    # ports:
+    #  - "6379:6379"
+    hostname: redis
+
+  worker:
+    build:
+      context: ./store
+    hostname: worker
+    entrypoint: celery
+    command: -A store worker --loglevel=info
+    volumes:
+      - ./store:/store
+    links:
+      - redis
+    depends_on:
+      - redis
+    environment:
+      - SECRET_KEY='django-insecure-0cm(agt+ea+zw%x*+2#kj2hhi7_ir7=*@oq)valj1zm3a92fgh'
+
+
+
+
+
 
 # postgresql-db:
 #   restart: always

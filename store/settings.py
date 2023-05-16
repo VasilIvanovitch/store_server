@@ -53,7 +53,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret! SECRET_KEY
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -248,6 +248,9 @@ SOCIALACCOUNT_PROVIDERS = {
 
 CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}'
+
+# CELERY_BROKER_URL = f'redis://redis:{REDIS_PORT}'            # вариант для докера
+# CELERY_RESULT_BACKEND = f'redis://redis:{REDIS_PORT}'
 
 # Stripe
 

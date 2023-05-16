@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Take environment variables from .env file
 environ.Env.read_env(BASE_DIR / '.env')
 
-#  settings for nginx
+# SECURITY settings for nginx (v f Docker)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
@@ -68,7 +68,7 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['basil-info.site']  #  правка ['*']
 
-# DOMAIN_NAME = env('DOMAIN_NAME')  # правка
+DOMAIN_NAME = env('DOMAIN_NAME')  # правка
 # Application definition
 
 INSTALLED_APPS = [

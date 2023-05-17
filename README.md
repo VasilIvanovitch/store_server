@@ -18,7 +18,7 @@ To get started with the project, follow these steps:
 1. Create a working directory for the project.
 2. Clone the repository into the working directory, specifically from the Server branch to access the deployed code.
 3. Copy the docker-compose.yml file and the nginx folder to the working directory.
-4. Review the docker-compose.yml file and make any necessary adjustments to match your environment and configuration.
+4. Review the docker-compose.yml file and make any necessary adjustments to match your environment and configuration. Please note that the Docker setup in this project was inspired by the examples provided in the https://github.com/dvk-net/deploy-django-app-postgresql-docker repository.
 5. Set up the necessary environment variables for the project, including those related to the database and Stripe integration.
 6. Build and run the Docker container to deploy the website.
 7. Access the website on the provided URL.

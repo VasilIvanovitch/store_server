@@ -21,30 +21,32 @@ services:
     restart: always
     build:
       context: ./store
-    # command: sh -c "gunicorn --bind 0.0.0.0:8000 store.store.wsgi"
+    command: sh -c "gunicorn --bind 0.0.0.0:8000 store.wsgi"
     hostname: django-backend
     image: djangobackend
     volumes:
-      - /home/basil/store-server/store/static:/app/store/static # <--here /var/www/static
-      - /home/basil/store-server/store/media:/app/store/media # <--here /var/www/media
-      - /home/basil/store-server/store:/app/store
+      - /home/basil/store-server/store/static:/store/static # <--here /var/www/static
+      - /home/basil/store-server/store/media:/store/media # <--here /var/www/media
+      - /home/basil/store-server/store:/store
     expose:
       - 8000
 
   certbot:
+    restart: always
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
       - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
-      - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
+      - /home/basil/store-server/persistentdata/certbot/www:/var/lib/letsencrypt
+      # - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
 
   redis:
+    restart: always
     image: redis:7.0.11-alpine
-    # ports:
-    #  - "6379:6379"
     hostname: redis
 
   worker:
+    restart: always
     build:
       context: ./store
     hostname: worker
@@ -56,12 +58,8 @@ services:
       - redis
     depends_on:
       - redis
-    environment:
-      - SECRET_KEY='django-insecure-0cm(agt+ea+zw%x*+2#kj2hhi7_ir7=*@oq)valj1zm3a92fgh'
-
-
-
-
+    env_file:
+      - store/.env
 
 
 # postgresql-db:

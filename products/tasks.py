@@ -14,7 +14,7 @@ def create_stripe_product_price(product_id):
     stripe_product_price = stripe.Price.create(
         product=stripe_product['id'], unit_amount=round(product.price * 100), currency='byn')
     product.stripe_product_price_id = stripe_product_price['id']
-    # product.save()
+    product.save()
 
 # @shared_task
 # def create_stripe_product_price(product_id):

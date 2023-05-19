@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 
 from users.models import User
+from products.tasks import create_stripe_product_price
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -36,19 +37,25 @@ class Product(models.Model):
     def __str__(self):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, *args, **kwargs):
         if not self.stripe_product_price_id:
-            stripe_product_price = self.create_stripe_product_price()
-            self.stripe_product_price_id = stripe_product_price['id']
-        super(Product, self).save(force_insert=False, force_update=False, using=None,
-                                  update_fields=None)
+            create_stripe_product_price.delay(self.id)
+        super().save(*args, **kwargs)
 
-    def create_stripe_product_price(self):
-        stripe_product = stripe.Product.create(name=self.name)
-        stripe_product_price = stripe.Price.create(
-            product=stripe_product['id'], unit_amount=round(self.price * 100), currency='byn')
-        return stripe_product_price
+
+#    def save(self, force_insert=False, force_update=False, using=None,
+#             update_fields=None):
+#        if not self.stripe_product_price_id:
+#            stripe_product_price = self.create_stripe_product_price()
+#            self.stripe_product_price_id = stripe_product_price['id']
+#        super(Product, self).save(force_insert=False, force_update=False, using=None,
+#                                  update_fields=None)
+#
+#    def create_stripe_product_price(self):
+#        stripe_product = stripe.Product.create(name=self.name)
+#        stripe_product_price = stripe.Price.create(
+#            product=stripe_product['id'], unit_amount=round(self.price * 100), currency='byn')
+#        return stripe_product_price
 
 
 class BasketQuerySet(models.QuerySet):
@@ -92,7 +99,6 @@ class Basket(models.Model):
             'sum': float(self.sum())
         }
         return basket_item
-
 
 # python manage.py makemigrations
 # python manage.py migrate

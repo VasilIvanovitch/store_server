@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path
+from django.views.decorators.cache import cache_page
 
 from users import views
 

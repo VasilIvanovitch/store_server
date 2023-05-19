@@ -81,7 +81,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.humanize',
     'rest_framework',
-
+    'rest_framework.authtoken',
+    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -267,5 +268,8 @@ STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
 # REST
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 4
+    'PAGE_SIZE': 4,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }

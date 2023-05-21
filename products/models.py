@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 
 from users.models import User
-# from products.tasks import create_stripe_product_price
+from products.tasks import create_stripe_product_price  # для варианта без signal
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -26,7 +26,7 @@ class Product(models.Model):
     description = models.TextField(verbose_name='Описание')
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена')
     quontity = models.PositiveIntegerField(default=0, verbose_name='Количество')
-    image = models.ImageField(upload_to='products_images')
+    image = models.ImageField(upload_to='products_images', null=True, blank=True)
     stripe_product_price_id = models.CharField(max_length=128, null=True, blank=True)
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE)
 
@@ -36,11 +36,16 @@ class Product(models.Model):
 
     def __str__(self):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__price = self.price
 
- #   def save(self, *args, **kwargs):
- #       if not self.stripe_product_price_id:
- #           create_stripe_product_price.delay(self.id)
- #       super().save(*args, **kwargs)
+    def save(self, *args, save_model=True, **kwargs):
+        if save_model:
+            if not self.stripe_product_price_id or self.__price != self.price:
+                create_stripe_product_price.delay(self.id)
+        return super().save(*args, **kwargs)
 
 
 #    def save(self, force_insert=False, force_update=False, using=None,

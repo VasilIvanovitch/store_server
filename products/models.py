@@ -25,7 +25,7 @@ class Product(models.Model):
     description = models.TextField(verbose_name='Описание')
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Цена')
     quontity = models.PositiveIntegerField(default=0, verbose_name='Количество')
-    image = models.ImageField(upload_to='products_images')
+    image = models.ImageField(upload_to='products_images', null=True, blank=True)
     stripe_product_price_id = models.CharField(max_length=128, null=True, blank=True)
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE)
 

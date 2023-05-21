@@ -79,8 +79,7 @@ class ProductsListView(TitleMixin, ListView):
     def get_queryset(self):
         queryset = super(ProductsListView, self).get_queryset()
         category_id = self.kwargs.get('category_id')
-        qset = queryset.filter(category_id=category_id) if category_id else queryset
-        return qset.order_by('name')
+        return queryset.filter(category_id=category_id) if category_id else queryset
 
 
 # def products(request, category_id=None, page_number=1):
@@ -98,14 +97,7 @@ class ProductsListView(TitleMixin, ListView):
 
 @login_required
 def basket_add(request, product_id):
-    product = Product.objects.get(id=product_id)
-    baskets = Basket.objects.filter(user=request.user, product=product)
-    if not baskets.exists():
-        Basket.objects.create(user=request.user, product=product, quantity=1)
-    else:
-        basket = baskets.first()
-        basket.quantity += 1
-        basket.save()
+    Basket.create_or_update(product_id, request.user)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 

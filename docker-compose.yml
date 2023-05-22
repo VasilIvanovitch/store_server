@@ -12,8 +12,8 @@ services:
     volumes:
       - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
       - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
-      - /home/basil/store-server/store/static:/app/store/static  # /var/www/static
-      - /home/basil/store-server/store/media:/app/store/media  # /var/www/media
+      - /home/basil/store-server/persistentdata/static:/app/store/static  # /var/www/static
+      - /home/basil/store-server/persistentdata/media:/app/store/media  # /var/www/media
     depends_on:
       - django-backend
 
@@ -30,38 +30,40 @@ services:
       - /home/basil/store-server/store:/store
     expose:
       - 8000
+#    depends_on:
+#      - worker
 
   certbot:
-  restart: always
+    restart: always
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
       - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
-      - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
+      - /home/basil/store-server/persistentdata/certbot/www:/var/lib/letsencrypt
+      # - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
 
   redis:
-  restart: always
+    restart: always
     image: redis:7.0.11-alpine
     # ports:
     #  - "6379:6379"
     hostname: redis
 
   worker:
-  restart: always
+    restart: always
     build:
       context: ./store
     hostname: worker
     entrypoint: celery
     command: -A store worker --loglevel=info
     volumes:
-      - /home/basil/store-server/store:/store
+      - ./store:/store
     links:
       - redis
     depends_on:
       - redis
     env_file:
       - store/.env
- 
 
 
 # postgresql-db:

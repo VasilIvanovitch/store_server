@@ -12,12 +12,13 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 @shared_task  # (base=Singleton)
 def create_stripe_product_price(product_id):
     from products.models import Product  # 'Вариант без signals'
-    product = Product.objects.get(id=product_id)
-    stripe_product = stripe.Product.create(name=product.name)
-    stripe_product_price = stripe.Price.create(
-        product=stripe_product['id'], unit_amount=round(product.price * 100), currency='byn')
-    product.stripe_product_price_id = stripe_product_price['id']
-    product.save(save_model=False)
+    product = Product.objects.filter(id=product_id).first()
+    if product:
+        stripe_product = stripe.Product.create(name=product.name)
+        stripe_product_price = stripe.Price.create(
+            product=stripe_product['id'], unit_amount=round(product.price * 100), currency='byn')
+        product.stripe_product_price_id = stripe_product_price['id']
+        product.save(save_model=False)
 
 # @shared_task
 # def create_stripe_product_price(product_id):

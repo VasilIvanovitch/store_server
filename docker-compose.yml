@@ -25,11 +25,11 @@ services:
     hostname: django-backend
     image: djangobackend
     volumes:
-      - /home/basil/store-server/store/static:/store/static # <--here /var/www/static
-      - /home/basil/store-server/store/media:/store/media # <--here /var/www/media
+      - /home/basil/store-server/persistentdata/static:/store/static # <--here /var/www/static
+      - /home/basil/store-server/persistentdata/media:/store/media # <--here /var/www/media
       - /home/basil/store-server/store:/store
-    expose:
-      - 8000
+#    expose:
+#      - 8000
 #    depends_on:
 #      - worker
 

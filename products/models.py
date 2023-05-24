@@ -5,6 +5,8 @@ from django.conf import settings
 
 from users.models import User
 from products.tasks import create_stripe_product_price  # для варианта без signal
+from django.db.models.signals import post_save
+from products.signals import create_stripe_product_price_on_create
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -39,17 +41,19 @@ class Product(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__price = self.price
+        self._price = self.price
 
-    def save(self, *args, save_model=True, **kwargs):
-        creating = not bool(self.id)
-        if creating:
-            super().save(*args, **kwargs)
-        if save_model:
-            if not self.stripe_product_price_id or self.__price != self.price:
-                create_stripe_product_price.delay(self.id)
-        return super().save(*args, **kwargs)
+#    def save(self, *args, save_model=True, **kwargs):
+#        creating = not bool(self.id)
+#        if creating:
+#            super().save(*args, **kwargs)
+#        if save_model:
+#            if not self.stripe_product_price_id or self.__price != self.price:
+#                create_stripe_product_price.delay(self.id)
+#        return super().save(*args, **kwargs)
 
+
+post_save.connect(create_stripe_product_price_on_create, sender=Product)
 	
 #    def save(self, force_insert=False, force_update=False, using=None,
 #             update_fields=None):

@@ -137,6 +137,7 @@ REDIS_PORT = env('REDIS_PORT')
 
 # Caches
 
+# django 3.2
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -146,6 +147,17 @@ CACHES = {
         }
     }
 }
+
+# django 4.2
+# CACHES = {
+#    "default": {
+#        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#        "LOCATION": f'redis://{REDIS_HOST}:{REDIS_PORT}',
+#        "OPTIONS": {
+#            "db": "1",
+#        },
+#    }
+# }
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

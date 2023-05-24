@@ -42,6 +42,9 @@ class Product(models.Model):
         self.__price = self.price
 
     def save(self, *args, save_model=True, **kwargs):
+        creating = not bool(self.id)
+        if creating:
+            super().save(*args, **kwargs)
         if save_model:
             if not self.stripe_product_price_id or self.__price != self.price:
                 create_stripe_product_price.delay(self.id)

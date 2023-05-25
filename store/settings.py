@@ -150,11 +150,11 @@ CACHES = {
 
 # django 4.2
 # CACHES = {
-#    "default": {
-#        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-#        "LOCATION": f'redis://{REDIS_HOST}:{REDIS_PORT}',
-#        "OPTIONS": {
-#            "db": "1",
+#    'default': {
+#        "BACKEND": 'django.core.cache.backends.redis.RedisCache',
+#        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}',
+#        'OPTIONS': {
+#            'db': '1',
 #        },
 #    }
 # }

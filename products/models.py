@@ -4,9 +4,9 @@ from django.db import models
 from django.conf import settings
 
 from users.models import User
-from products.tasks import create_stripe_product_price  # для варианта без signal
-from django.db.models.signals import post_save
-from products.signals import create_stripe_product_price_on_create
+# from products.tasks import create_stripe_product_price  # для варианта без signal
+# from django.db.models.signals import post_save
+# from products.signals import create_stripe_product_price_on_create
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -53,8 +53,9 @@ class Product(models.Model):
 #        return super().save(*args, **kwargs)
 
 
-post_save.connect(create_stripe_product_price_on_create, sender=Product)
-	
+# post_save.connect(create_stripe_product_price_on_create, sender=Product)
+
+
 #    def save(self, force_insert=False, force_update=False, using=None,
 #             update_fields=None):
 #        if not self.stripe_product_price_id:

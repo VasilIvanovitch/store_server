@@ -28,6 +28,9 @@ services:
       - /home/basil/store-server/persistentdata/static:/store/static # <--here /var/www/static
       - /home/basil/store-server/persistentdata/media:/store/media # <--here /var/www/media
       - /home/basil/store-server/store:/store
+    environment:
+      - IS_DOCKER=True
+      - REDIS_HOST=redis
 #    expose:
 #      - 8000
 #    depends_on:

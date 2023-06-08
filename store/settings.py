@@ -52,10 +52,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(BASE_DIR / '.env')
 
 # SECURITY settings for nginx (v f Docker)
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+IS_DOCKER = os.getenv('IS_DOCKER')
+if IS_DOCKER:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -133,8 +135,10 @@ INTERNAL_IPS = [
 ]
 
 # настройки REDIS
-
-REDIS_HOST = env('REDIS_HOST')
+if IS_DOCKER:
+    REDIS_HOST = os.getenv('REDIS_HOST')
+else:
+    REDIS_HOST = env('REDIS_HOST')
 REDIS_PORT = env('REDIS_PORT')
 
 # Caches

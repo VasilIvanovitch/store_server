@@ -2,9 +2,12 @@ import stripe
 
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
+
 # from django.db.models.signals import post_save
 
 from users.models import User
+
 # from products.tasks import create_stripe_product_price  # для варианта без signal
 # from products.signals import create_stripe_product_price_on_create
 
@@ -18,9 +21,13 @@ class ProductCategory(models.Model):
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+        ordering = ('name', 'description')
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('products:category', kwargs={'category_id': self.pk})
 
 
 class Product(models.Model):
@@ -35,6 +42,7 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+        ordering = ('name', 'description')
 
     def __str__(self):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
@@ -42,6 +50,7 @@ class Product(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._price = self.price
+
 
 #    def save(self, *args, save_model=True, **kwargs):
 #        creating = not bool(self.id)

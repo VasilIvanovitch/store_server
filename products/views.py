@@ -80,7 +80,7 @@ class ProductsListView(TitleMixin, ListView):
         queryset = super(ProductsListView, self).get_queryset()
         category_id = self.kwargs.get('category_id')
         qset = queryset.filter(category_id=category_id) if category_id else queryset
-        return qset.order_by('name')
+        return qset  # .order_by('name')
 
 
 # def products(request, category_id=None, page_number=1):

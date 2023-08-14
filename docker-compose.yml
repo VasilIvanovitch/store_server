@@ -41,9 +41,8 @@ services:
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
-      - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt # <--here
-      - /home/basil/store-server/persistentdata/certbot/www:/var/lib/letsencrypt
-      # - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
+      - /home/basil/store-server/persistentdata/certbot/conf:/etc/letsencrypt
+      - /home/basil/store-server/persistentdata/certbot/www:/var/www/certbot
 
   redis:
     restart: always
